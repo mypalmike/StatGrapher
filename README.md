@@ -1,7 +1,7 @@
 StatGrapher
 ===========
 
-OS X Screensaver - Draws Random Graphs. Based on memories of an ancient (Mac OS 7 era) screensaver named GraphicStat.
+OS X Screensaver - Draws Random Graphs. Based on memories of an ancient (Mac OS 7 era) screensaver named GraphStat.
 
 ![(Screenshot)](screenshot.png "Important statistics")
 
