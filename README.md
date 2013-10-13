@@ -3,6 +3,8 @@ StatGrapher
 
 OS X Screensaver - Draws Random Graphs. Based on memories of an old Mac screensaver named GraphicStat.
 
+![(Screenshot)](screenshot.png "Important statistics")
+
 StatGrapher.saver.tgz is the most recent binary build. Extract and double-click on the StatGrapher.saver package to install. Mountain Lion or later is probably required.
 
 You can change the text that is used in the graph headings.
