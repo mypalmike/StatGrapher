@@ -11,6 +11,128 @@
 
 @implementation StatGrapherView
 
+- (NSURL*)applicationDirectory
+{
+    NSString* bundleID = [[NSBundle mainBundle] bundleIdentifier];
+    NSFileManager*fm = [NSFileManager defaultManager];
+    NSURL*    dirPath = nil;
+    
+    // Find the application support directory in the home directory.
+    NSArray* appSupportDir = [fm URLsForDirectory:NSApplicationSupportDirectory
+                                        inDomains:NSUserDomainMask];
+    if ([appSupportDir count] > 0)
+    {
+        // Append the bundle ID to the URL for the
+        // Application Support directory
+        dirPath = [[appSupportDir objectAtIndex:0] URLByAppendingPathComponent:bundleID];
+        
+        // If the directory does not exist, this method creates it.
+        // This method call works in OS X 10.7 and later only.
+        NSError*    theError = nil;
+        if (![fm createDirectoryAtURL:dirPath withIntermediateDirectories:YES
+                           attributes:nil error:&theError])
+        {
+            return nil;
+        }
+    }
+    
+    return dirPath;
+}
+
+- (void) loadWords
+{
+    word1s = [[NSMutableArray alloc] init];
+    word2s = [[NSMutableArray alloc] init];
+    word3s = [[NSMutableArray alloc] init];
+    word4s = [[NSMutableArray alloc] init];
+    
+    NSURL *dirUrl = [self applicationDirectory];
+    if (dirUrl)
+    {
+        NSURL *fileUrl = [dirUrl URLByAppendingPathComponent:@"statgrapher_words"];
+        NSFileHandle* aHandle = [NSFileHandle fileHandleForReadingFromURL:fileUrl error:nil];
+        NSData* fileContents = nil;
+        if (aHandle)
+        {
+            fileContents = [aHandle readDataToEndOfFile];
+            NSString *fileContentsStr = [[NSString alloc] initWithData:fileContents
+                                                      encoding:NSUTF8StringEncoding];
+
+            NSArray *lines = [fileContentsStr componentsSeparatedByCharactersInSet: [NSCharacterSet newlineCharacterSet]];
+            
+            NSMutableArray *currArr = word1s;
+            for (NSString *line in lines)
+            {
+                NSString *trimmedLine = [line stringByTrimmingCharactersInSet:
+                        [NSCharacterSet whitespaceAndNewlineCharacterSet]];
+
+                if ([trimmedLine isEqual:@"*1*"])
+                {
+                    currArr = word1s;
+                }
+                else if ([trimmedLine isEqual:@"*2*"])
+                {
+                    currArr = word2s;
+                }
+                else if ([trimmedLine isEqual:@"*3*"])
+                {
+                    currArr = word3s;
+                }
+                else if ([trimmedLine isEqual:@"*4*"])
+                {
+                    currArr = word4s;
+                }
+                else if ([trimmedLine length] > 0)
+                {
+                    [currArr addObject:trimmedLine];
+                }
+            }
+        }
+    }
+    // Fill in defaults if no file (or section in file) found.
+    if ([word1s count] < 1)
+    {
+        word1s = [[NSMutableArray alloc] initWithObjects:@"Interpolated", @"Reticulated",
+                  @"Computed", @"Approximate", @"Expected", @"Ancillary", @"Tangential",
+                  @"Causal", @"Improved", @"Quantum", nil];
+    }
+    if ([word2s count] < 1)
+    {
+        word2s = [[NSMutableArray alloc] initWithObjects:@"Mechanical", @"Assumed",
+                  @"Angular", @"Real", @"False", @"Token", @"Orbital",
+                  @"Directional", @"Strong", @"Weak", nil];
+    }
+    if ([word3s count] < 1)
+    {
+        word3s = [[NSMutableArray alloc] initWithObjects: @"Thrust", @"Vector",
+                  @"Angle", @"Force", @"Power", @"Speed", @"Length",
+                  @"Area", @"Entropy", @"Puppies", nil];
+    }
+    if ([word4s count] < 1)
+    {
+        word4s = [[NSMutableArray alloc] initWithObjects:@"Measured", @"Cubic Nanometers",
+                  @"Projected", @"Per Minute", @"Amortized", @"Normalized", @"Off Peak",
+                  @"Parts Per Billion", @"Golly gee!", nil];
+    }
+}
+
+- (NSArray *) getRandomWords
+{
+    NSString *word1;
+    NSString *word2;
+    NSString *word3;
+    NSString *word4;
+
+    
+    word1 = [word1s objectAtIndex:SSRandomIntBetween(0, (int)[word1s count] - 1)];
+    word2 = [word2s objectAtIndex:SSRandomIntBetween(0, (int)[word2s count] - 1)];
+    word3 = [word3s objectAtIndex:SSRandomIntBetween(0, (int)[word3s count] - 1)];
+    word4 = [word4s objectAtIndex:SSRandomIntBetween(0, (int)[word4s count] - 1)];
+    
+    NSArray *words = [[NSArray alloc] initWithObjects:word1, word2, word3, word4, nil];
+    return words;
+}
+
 - (NSColor *) randomBGColor
 {
     float brightness = SSRandomFloatBetween( 0.0, 0.1 );
@@ -26,9 +148,9 @@
     float red, green, blue;
 
     // Calculate a random color
-    red = 0.5; // SSRandomFloatBetween( 0.5, 1.0 );
-    green = SSRandomFloatBetween( 0.85, 1.0 );
-    blue = 0.5; //SSRandomFloatBetween( 0.5, 1.0 );
+    red = SSRandomFloatBetween( 0.4, 0.6 );
+    green = SSRandomFloatBetween( 0.6, 0.9 );
+    blue = SSRandomFloatBetween( 0.4, 0.6 );
     
     return [NSColor colorWithCalibratedRed:red
                                       green:green
@@ -145,7 +267,9 @@
     origin.y = SSRandomFloatBetween(0.0, height * 0.5);
     linesToDraw = SSRandomIntBetween(0, 4);
     
-    text = @"Floatillabillionaire Rastermania Indexification (normalized)";
+    NSArray *words = [self getRandomWords];
+    text = [NSString stringWithFormat:@"%@ %@ %@ (%@)", [words objectAtIndex:0], [words objectAtIndex:1], [words objectAtIndex:2], [words objectAtIndex:3]];
+    shortText = [NSString stringWithFormat:@"%@ %@ %@", [words objectAtIndex:0], [words objectAtIndex:1], [words objectAtIndex:2]];
     fontName = @"Courier";
     int maxFontSize = [self maxFontSize:text width:width * 0.9 height:height * 0.9 font:fontName max:(int)height * 0.125];
     int fontSize = SSRandomIntBetween([self minFontSize:height], maxFontSize);
@@ -153,7 +277,11 @@
     NSSize strSize = [self stringSize:text font:font];
     float maxTextX = width - strSize.width;
     textOrigin.x = SSRandomFloatBetween(maxTextX * 0.2, maxTextX * 0.8);
-    textOrigin.y = SSRandomFloatBetween(height * 0.2, height * 0.8);
+    textOrigin.y = SSRandomFloatBetween(height * 0.1, height * 0.3);
+    if (SSRandomIntBetween(0, 1))
+    {
+        textOrigin.y = height - textOrigin.y;
+    }
 
     [self setMode: GraphModeStart frames:0];
 }
@@ -161,12 +289,17 @@
 - (id)initWithFrame:(NSRect)frame isPreview:(BOOL)isPreview
 {
     self = [super initWithFrame:frame isPreview:isPreview];
+    
     if (self) {
         [self setAnimationTimeInterval:0.2];
     }
 
+    minDelay = 2;
+    maxDelay = 16;
+    
+    [self loadWords];
     [self resetGraph:frame isPreview:isPreview];
-
+    
     return self;
 }
 
@@ -244,6 +377,11 @@
     [self line:NSMakePoint(x0, y0) to:NSMakePoint(x1, y1) width:w];
 }
 
+- (int)getDelay
+{
+    return SSRandomIntBetween(minDelay, maxDelay);
+}
+
 - (void)animateOneFrame
 {
     [super animateOneFrame];
@@ -267,14 +405,14 @@
         NSPoint end = NSMakePoint(width, origin.y);
         [axisColor set];
         [self line:start to:end width:MAX(1.0, height/200.0)];
-        [self setMode: GraphModeYAxis frames:0];//;10];
+        [self setMode: GraphModeYAxis frames:[self getDelay]];
     }
     else if( graphMode == GraphModeYAxis ) {
         NSPoint start = NSMakePoint(origin.x, 0.0);
         NSPoint end = NSMakePoint(origin.x, height);
         [axisColor set];
         [self line:start to:end width:MAX(1.0, height/200.0)];
-        [self setMode: GraphModeHorizontals frames:0];//10];
+        [self setMode: GraphModeHorizontals frames:[self getDelay]];
     }
     else if( graphMode == GraphModeHorizontals) {
         float height = [self bounds].size.height;
@@ -317,7 +455,7 @@
                 [self line:start to:end width:1.0];
             }
         }
-        [self setMode: GraphModeVerticals frames:0];//10];
+        [self setMode: GraphModeVerticals frames:[self getDelay]];
     }
     else if( graphMode == GraphModeVerticals)
     {
@@ -348,22 +486,22 @@
                 [self line:start to:end width:1.0];
             }
         }
-        [self setMode: GraphModeText frames:0];//10];
-    }
-    else if( graphMode == GraphModeText)
-    {
-        NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys:font, NSFontAttributeName, textColor, NSForegroundColorAttributeName, nil];
-
-        NSAttributedString * currentText=[[NSAttributedString alloc] initWithString:text attributes: attributes];
-        [currentText drawAtPoint:textOrigin];
-        
-        [self setMode: GraphModeParabola frames:0];//10];
+        [self setMode: GraphModeParabola frames:[self getDelay]];
     }
     else if( graphMode == GraphModeParabola )
     {
         [[self randomLineColor] set];
         [self randomParabola:[self bounds].size width:MAX(1.0, height/400.0)];
-        [self setMode: GraphModeLines frames:0];//10];
+        [self setMode: GraphModeText frames:[self getDelay]];
+    }
+    else if( graphMode == GraphModeText)
+    {
+        NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys:font, NSFontAttributeName, textColor, NSForegroundColorAttributeName, nil];
+
+        NSAttributedString * currentText=[[NSAttributedString alloc] initWithString:shortText attributes: attributes];
+        [currentText drawAtPoint:textOrigin];
+        
+        [self setMode: GraphModeLines frames:[self getDelay]];
     }
     else if( graphMode == GraphModeLines )
     {
@@ -379,12 +517,24 @@
         
         if (linesToDraw-- > 0)
         {
-            [self setMode: GraphModeLines frames:0];//10];
+            [self setMode: GraphModeLines frames:[self getDelay]];
         }
         else
         {
-            [self setMode: GraphModeReset frames:0];//10];
+            [self setMode: GraphModeTextParen frames:[self getDelay]];
         }
+    }
+    else if( graphMode == GraphModeTextParen)
+    {
+        if( SSRandomIntBetween(0, 2) == 0)
+        {
+            NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys:font, NSFontAttributeName, textColor, NSForegroundColorAttributeName, nil];
+            
+            NSAttributedString * currentText=[[NSAttributedString alloc] initWithString:text attributes: attributes];
+            [currentText drawAtPoint:textOrigin];
+        }
+        
+        [self setMode: GraphModeReset frames:[self getDelay] * 3];
     }
     else if( graphMode == GraphModeReset )
     {

@@ -14,9 +14,10 @@ typedef NS_ENUM(NSInteger, GraphMode) {
     GraphModeYAxis,
     GraphModeHorizontals,
     GraphModeVerticals,
-    GraphModeText,
     GraphModeParabola,
+    GraphModeText,
     GraphModeLines,
+    GraphModeTextParen,
     GraphModeReset
 };
 
@@ -29,10 +30,17 @@ typedef NS_ENUM(NSInteger, GraphMode) {
     NSColor *gridColor;
     NSColor *textColor;
     NSPoint origin;
+    NSString *shortText;
     NSString *text;
     NSString *fontName;
     NSFont *font;
     NSPoint textOrigin;
     int linesToDraw;
+    NSMutableArray *word1s;
+    NSMutableArray *word2s;
+    NSMutableArray *word3s;
+    NSMutableArray *word4s;
+    int minDelay;
+    int maxDelay;
 }
 @end
