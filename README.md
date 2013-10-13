@@ -9,6 +9,7 @@ Create a text file named ~/Library/Application\ Support/com.apple.systempreferen
 
 The format is line-oriented with 4 sections delimited by the section number enclosed in asterisks.
 
+```
 *1*
 World
 List
@@ -25,3 +26,4 @@ Three
 Word
 List
 Four
+```
