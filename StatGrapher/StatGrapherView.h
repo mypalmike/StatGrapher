@@ -41,7 +41,6 @@ typedef NS_ENUM(NSInteger, GraphMode) {
     NSMutableArray *word2s;
     NSMutableArray *word3s;
     NSMutableArray *word4s;
-    NSMutableArray *word5s;
     int minDelay;
     int maxDelay;
     BOOL doParens;

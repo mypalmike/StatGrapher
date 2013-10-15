@@ -45,7 +45,6 @@
     word2s = [[NSMutableArray alloc] init];
     word3s = [[NSMutableArray alloc] init];
     word4s = [[NSMutableArray alloc] init];
-    word5s = [[NSMutableArray alloc] init];
     
     NSURL *dirUrl = [self applicationDirectory];
     if (dirUrl)
@@ -83,10 +82,6 @@
                 {
                     currArr = word4s;
                 }
-                else if ([trimmedLine isEqual:@"*5*"])
-                {
-                    currArr = word5s;
-                }
                 else if ([trimmedLine length] > 0)
                 {
                     [currArr addObject:trimmedLine];
@@ -97,33 +92,31 @@
     // Fill in defaults if no file (or section in file) found.
     if ([word1s count] < 1)
     {
-        word1s = [[NSMutableArray alloc] initWithObjects:@"Interpolated", @"Reticulated",
-                  @"Cryogenic", @"Approximate", @"Expected", @"Ancillary", @"Tangential",
-                  @"Emergency", @"Improved", @"Quantum", nil];
+        word1s = [[NSMutableArray alloc] initWithObjects:@"Interpolated",
+                  @"Haptic", @"Approximate", @"Expected", @"Runtime", @"Tangential",
+                  @"Emergency failover", @"Improved", @"Quantum", @"Angular", @"Mechanical", nil];
     }
     if ([word2s count] < 1)
     {
-        word2s = [[NSMutableArray alloc] initWithObjects:@"Mechanical", @"Phase",
-                  @"Angular", @"Real", @"Pseudo", @"Token", @"Orbital",
-                  @"Directional", @"Strong", @"Compute", nil];
+        word2s = [[NSMutableArray alloc] initWithObjects:@"phase diffusion",
+                  @"real", @"token", @"orbital", @"suction",
+                  @"direction", @"strong force", @"computed", @"vibration",
+                  @"subchannel spectrum", @"diffusion field", @"radioactive", nil];
     }
     if ([word3s count] < 1)
     {
-        word3s = [[NSMutableArray alloc] initWithObjects: @"Mass", @"Cycle",
-                  @"Diffusion", @"Vibration", @"Suction", @"Acceleration", @"Subchannel",
-                  @"Field", @"Radiation", @"Torque", nil];
+        word3s = [[NSMutableArray alloc] initWithObjects: @"thrust", @"vector",
+                  @"angle", @"force", @"power", @"length",
+                  @"area", @"entropy", @"velocity", @"cycle", @"torque",
+                  @"bearings", nil];
     }
     if ([word4s count] < 1)
     {
-        word4s = [[NSMutableArray alloc] initWithObjects: @"Thrust", @"Vector",
-                  @"Angle", @"Force", @"Power", @"Speed", @"Length",
-                  @"Area", @"Entropy", @"Velocity", nil];
-    }
-    if ([word5s count] < 1)
-    {
-        word5s = [[NSMutableArray alloc] initWithObjects:@"Measured", @"Cubic Nanometers",
-                  @"Projected", @"Per Minute", @"Amortized", @"Normalized", @"Off Peak",
-                  @"Parts Per Billion", @"Observed", @"Modeled", nil];
+        word4s = [[NSMutableArray alloc] initWithObjects:@"[measured]", @"(cubic nanometers)",
+                  @"[projected]", @"(per minute)", @"[amortized]", @"[normalized]", @"[off peak]",
+                  @"(parts per billion)", @"[observed]", @"[modeled]", nil];
+        
+
     }
 }
 
@@ -133,20 +126,18 @@
     NSString *word2;
     NSString *word3;
     NSString *word4;
-    NSString *word5;
     
     word1 = [word1s objectAtIndex:SSRandomIntBetween(0, (int)[word1s count] - 1)];
     word2 = [word2s objectAtIndex:SSRandomIntBetween(0, (int)[word2s count] - 1)];
     word3 = [word3s objectAtIndex:SSRandomIntBetween(0, (int)[word3s count] - 1)];
     word4 = [word4s objectAtIndex:SSRandomIntBetween(0, (int)[word4s count] - 1)];
-    word5 = [word5s objectAtIndex:SSRandomIntBetween(0, (int)[word5s count] - 1)];
     
     if (SSRandomIntBetween(0, 100) == 0)
     {
-        word4 = @"Puppies";
+        word4 = @"puppies";
     }
     
-    NSArray *words = [[NSArray alloc] initWithObjects:word1, word2, word3, word4, word5, nil];
+    NSArray *words = [[NSArray alloc] initWithObjects:word1, word2, word3, word4, nil];
     return words;
 }
 
@@ -286,8 +277,8 @@
     doParens = (SSRandomIntBetween(0, 2) == 0);
     
     NSArray *words = [self getRandomWords];
-    text = [NSString stringWithFormat:@"%@ %@ %@ %@ (%@)", [words objectAtIndex:0], [words objectAtIndex:1], [words objectAtIndex:2], [words objectAtIndex:3], [words objectAtIndex:4]];
-    shortText = [NSString stringWithFormat:@"%@ %@ %@ %@", [words objectAtIndex:0], [words objectAtIndex:1], [words objectAtIndex:2], [words objectAtIndex:3]];
+    text = [NSString stringWithFormat:@"%@ %@ %@ %@", [words objectAtIndex:0], [words objectAtIndex:1], [words objectAtIndex:2], [words objectAtIndex:3]];
+    shortText = [NSString stringWithFormat:@"%@ %@ %@", [words objectAtIndex:0], [words objectAtIndex:1], [words objectAtIndex:2]];
     fontName = @"Verdana";
     int maxFontSize = [self maxFontSize:text width:width * 0.9 height:height * 0.9 font:fontName max:(int)height * 0.125];
     int fontSize = SSRandomIntBetween([self minFontSize:height], maxFontSize);
