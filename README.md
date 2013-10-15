@@ -13,7 +13,7 @@ You can change the text that is used in the graph headings. Create a text file n
 ~/Library/Application\ Support/com.apple.systempreferences/statgrapher_words
 ```
 
-The format is line-oriented with 4 sections delimited by the section number enclosed in asterisks.
+The format is line-oriented with 5 sections delimited by the section number enclosed in asterisks.
 
 ```
 *1*
@@ -25,11 +25,15 @@ Word
 List
 Two
 *3*
-Word
-List
-Three
+You Get
+The
+Idea
 *4*
-Word
-List
-Four
+Force
+Power
+Strength
+*5*
+Parenthesized
+Words
+Here
 ```

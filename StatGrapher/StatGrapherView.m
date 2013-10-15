@@ -45,6 +45,7 @@
     word2s = [[NSMutableArray alloc] init];
     word3s = [[NSMutableArray alloc] init];
     word4s = [[NSMutableArray alloc] init];
+    word5s = [[NSMutableArray alloc] init];
     
     NSURL *dirUrl = [self applicationDirectory];
     if (dirUrl)
@@ -82,6 +83,10 @@
                 {
                     currArr = word4s;
                 }
+                else if ([trimmedLine isEqual:@"*5*"])
+                {
+                    currArr = word5s;
+                }
                 else if ([trimmedLine length] > 0)
                 {
                     [currArr addObject:trimmedLine];
@@ -93,26 +98,32 @@
     if ([word1s count] < 1)
     {
         word1s = [[NSMutableArray alloc] initWithObjects:@"Interpolated", @"Reticulated",
-                  @"Computed", @"Approximate", @"Expected", @"Ancillary", @"Tangential",
-                  @"Causal", @"Improved", @"Quantum", nil];
+                  @"Cryogenic", @"Approximate", @"Expected", @"Ancillary", @"Tangential",
+                  @"Emergency", @"Improved", @"Quantum", nil];
     }
     if ([word2s count] < 1)
     {
-        word2s = [[NSMutableArray alloc] initWithObjects:@"Mechanical", @"Assumed",
-                  @"Angular", @"Real", @"False", @"Token", @"Orbital",
-                  @"Directional", @"Strong", @"Weak", nil];
+        word2s = [[NSMutableArray alloc] initWithObjects:@"Mechanical", @"Phase",
+                  @"Angular", @"Real", @"Pseudo", @"Token", @"Orbital",
+                  @"Directional", @"Strong", @"Compute", nil];
     }
     if ([word3s count] < 1)
     {
-        word3s = [[NSMutableArray alloc] initWithObjects: @"Thrust", @"Vector",
-                  @"Angle", @"Force", @"Power", @"Speed", @"Length",
-                  @"Area", @"Entropy", @"Puppies", nil];
+        word3s = [[NSMutableArray alloc] initWithObjects: @"Mass", @"Cycle",
+                  @"Diffusion", @"Vibration", @"Suction", @"Acceleration", @"Subchannel",
+                  @"Field", @"Radiation", @"Torque", nil];
     }
     if ([word4s count] < 1)
     {
-        word4s = [[NSMutableArray alloc] initWithObjects:@"Measured", @"Cubic Nanometers",
+        word4s = [[NSMutableArray alloc] initWithObjects: @"Thrust", @"Vector",
+                  @"Angle", @"Force", @"Power", @"Speed", @"Length",
+                  @"Area", @"Entropy", @"Velocity", nil];
+    }
+    if ([word5s count] < 1)
+    {
+        word5s = [[NSMutableArray alloc] initWithObjects:@"Measured", @"Cubic Nanometers",
                   @"Projected", @"Per Minute", @"Amortized", @"Normalized", @"Off Peak",
-                  @"Parts Per Billion", @"Golly gee!", nil];
+                  @"Parts Per Billion", @"Observed", @"Modeled", nil];
     }
 }
 
@@ -122,14 +133,20 @@
     NSString *word2;
     NSString *word3;
     NSString *word4;
-
+    NSString *word5;
     
     word1 = [word1s objectAtIndex:SSRandomIntBetween(0, (int)[word1s count] - 1)];
     word2 = [word2s objectAtIndex:SSRandomIntBetween(0, (int)[word2s count] - 1)];
     word3 = [word3s objectAtIndex:SSRandomIntBetween(0, (int)[word3s count] - 1)];
     word4 = [word4s objectAtIndex:SSRandomIntBetween(0, (int)[word4s count] - 1)];
+    word5 = [word5s objectAtIndex:SSRandomIntBetween(0, (int)[word5s count] - 1)];
     
-    NSArray *words = [[NSArray alloc] initWithObjects:word1, word2, word3, word4, nil];
+    if (SSRandomIntBetween(0, 100) == 0)
+    {
+        word4 = @"Puppies";
+    }
+    
+    NSArray *words = [[NSArray alloc] initWithObjects:word1, word2, word3, word4, word5, nil];
     return words;
 }
 
@@ -263,14 +280,15 @@
     axisColor = [self randomAxisColor];
     gridColor = [self randomGridColor];
     textColor = [self randomTextColor];
-    origin.x = SSRandomFloatBetween(0.0, width * 0.5);
-    origin.y = SSRandomFloatBetween(0.0, height * 0.5);
+    origin.x = SSRandomFloatBetween(width * 0.05, width * 0.95);
+    origin.y = SSRandomFloatBetween(height * 0.05, height * 0.95);
     linesToDraw = SSRandomIntBetween(0, 4);
+    doParens = (SSRandomIntBetween(0, 2) == 0);
     
     NSArray *words = [self getRandomWords];
-    text = [NSString stringWithFormat:@"%@ %@ %@ (%@)", [words objectAtIndex:0], [words objectAtIndex:1], [words objectAtIndex:2], [words objectAtIndex:3]];
-    shortText = [NSString stringWithFormat:@"%@ %@ %@", [words objectAtIndex:0], [words objectAtIndex:1], [words objectAtIndex:2]];
-    fontName = @"Courier";
+    text = [NSString stringWithFormat:@"%@ %@ %@ %@ (%@)", [words objectAtIndex:0], [words objectAtIndex:1], [words objectAtIndex:2], [words objectAtIndex:3], [words objectAtIndex:4]];
+    shortText = [NSString stringWithFormat:@"%@ %@ %@ %@", [words objectAtIndex:0], [words objectAtIndex:1], [words objectAtIndex:2], [words objectAtIndex:3]];
+    fontName = @"Verdana";
     int maxFontSize = [self maxFontSize:text width:width * 0.9 height:height * 0.9 font:fontName max:(int)height * 0.125];
     int fontSize = SSRandomIntBetween([self minFontSize:height], maxFontSize);
     font = [NSFont fontWithName:fontName size:fontSize];
@@ -294,8 +312,8 @@
         [self setAnimationTimeInterval:0.2];
     }
 
-    minDelay = 2;
-    maxDelay = 16;
+    minDelay = 3;
+    maxDelay = 15;
     
     [self loadWords];
     [self resetGraph:frame isPreview:isPreview];
@@ -357,6 +375,47 @@
     [path stroke];
 }
 
+- (void)randomBend:(NSSize)size width:(CGFloat)w
+{
+    float width = size.width;
+    float height = size.height;
+    
+    float sideX = SSRandomFloatBetween(width * -0.6, width * -0.3);
+    float sideY = SSRandomIntBetween(height * 0.6, height);
+    float vertX = SSRandomIntBetween(width * 0.6, width);
+    float vertY = SSRandomFloatBetween(width * -0.6, width * -0.3);
+
+    if (SSRandomIntBetween(0, 1) == 0)
+    {
+        sideX = width - sideX;
+        vertX = width - vertX;
+    }
+    if (SSRandomIntBetween(0, 1) == 0)
+    {
+        sideY = height - sideY;
+        vertY = height - vertY;
+    }
+    
+    NSPoint controlPoint = NSMakePoint(vertX, sideY);
+    NSBezierPath *path = [NSBezierPath bezierPath];
+    [path moveToPoint:NSMakePoint(sideX, sideY)];
+    [path curveToPoint:NSMakePoint(vertX, vertY) controlPoint1:controlPoint controlPoint2:controlPoint];
+    [path setLineWidth:w];
+    [path stroke];
+}
+
+- (void)randomCurve:(NSSize)size width:(CGFloat)w
+{
+    if (SSRandomIntBetween(0, 1) == 0)
+    {
+        [self randomParabola:size width:w];
+    }
+    else
+    {
+        [self randomBend:size width:w];
+    }
+}
+
 - (void)randomLine:(NSSize)size width:(CGFloat)w
 {
     float centerX = SSRandomFloatBetween(size.width * 0.3, size.width * 0.7);
@@ -375,6 +434,21 @@
     deltaY = deltaX * slope;
     float y0 = centerY - deltaY;
     [self line:NSMakePoint(x0, y0) to:NSMakePoint(x1, y1) width:w];
+}
+
+- (void)drawTextShort
+{
+    NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys:font, NSFontAttributeName, textColor, NSForegroundColorAttributeName, nil];
+    NSAttributedString * currentText=[[NSAttributedString alloc] initWithString:shortText attributes: attributes];
+    [currentText drawAtPoint:textOrigin];
+}
+
+- (void)drawTextLong
+{
+    NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys:font, NSFontAttributeName, textColor, NSForegroundColorAttributeName, nil];
+    
+    NSAttributedString * currentText=[[NSAttributedString alloc] initWithString:text attributes: attributes];
+    [currentText drawAtPoint:textOrigin];
 }
 
 - (int)getDelay
@@ -398,7 +472,7 @@
     {
         [bgColor set];
         NSRectFill ( [self bounds] );
-        [self setMode: GraphModeXAxis frames:0];
+        [self setMode: GraphModeXAxis frames:4];
     }
     else if( graphMode == GraphModeXAxis ) {
         NSPoint start = NSMakePoint(0.0, origin.y);
@@ -415,126 +489,123 @@
         [self setMode: GraphModeHorizontals frames:[self getDelay]];
     }
     else if( graphMode == GraphModeHorizontals) {
-        float height = [self bounds].size.height;
-        float initialLineDist;
         float logScale;
-        if( SSRandomIntBetween( 0, 10 ) > 5 )
-        {
-            initialLineDist = SSRandomFloatBetween(height / 12.0, height / 15.0);
-            logScale =  SSRandomFloatBetween(1.3, 1.6);
-        }
-        else
-        {
-            initialLineDist = SSRandomFloatBetween(height / 20.0, height / 4.0);
-            logScale = SSRandomFloatBetween(0.6, 0.8);
-        }
+        float initialLineDist = SSRandomFloatBetween(height / 40.0, height / 25.0);
+        logScale =  SSRandomFloatBetween(1.0, 1.25);
         [gridColor set];
-        float y = origin.y;
+        
         float lineDist = initialLineDist;
-        while( y > 0.0 && lineDist > [self bounds].size.height / 100.0 )
+        float y = origin.y - lineDist;
+        while( y > 0.0 )
         {
+            lineDist *= logScale;
+            NSPoint start = NSMakePoint(0.0, y);
+            NSPoint end = NSMakePoint(width, y);
+            [self line:start to:end width:1.0];
             y -= lineDist;
-            if( y > 0.0 )
-            {
-                lineDist *= logScale;
-                NSPoint start = NSMakePoint(0.0, y);
-                NSPoint end = NSMakePoint([self bounds].size.width, y);
-                [self line:start to:end width:1.0];
-            }
         }
-        y = origin.y;
+        
         lineDist = initialLineDist;
-        while( y < [self bounds].size.height && lineDist > [self bounds].size.height / 100.0)
+        y = origin.y + lineDist;
+        while( y < height )
         {
+            lineDist *= logScale;
+            NSPoint start = NSMakePoint(0.0, y);
+            NSPoint end = NSMakePoint(width, y);
+            [self line:start to:end width:1.0];
             y += lineDist;
-            if( y < [self bounds].size.height )
-            {
-                lineDist *= logScale;
-                NSPoint start = NSMakePoint(0.0, y);
-                NSPoint end = NSMakePoint([self bounds].size.width, y);
-                [self line:start to:end width:1.0];
-            }
         }
+        
         [self setMode: GraphModeVerticals frames:[self getDelay]];
     }
     else if( graphMode == GraphModeVerticals)
     {
-        float width = [self bounds].size.width;
-        float height = [self bounds].size.height;
-        // Use height as guide so it's similar in scale to horizontals
-        float lineDist = SSRandomFloatBetween(height / 20.0, height / 4.0);
+        float logScale;
+        float initialLineDist = SSRandomFloatBetween(height / 40.0, height / 25.0);
+        logScale =  SSRandomFloatBetween(1.0, 1.25);
         [gridColor set];
-        float x = origin.x;
+        
+        float lineDist = initialLineDist;
+        float x = origin.x - lineDist;
         while( x > 0.0 )
         {
+            lineDist *= logScale;
+            NSPoint start = NSMakePoint(x, 0.0);
+            NSPoint end = NSMakePoint(x, height);
+            [self line:start to:end width:1.0];
             x -= lineDist;
-            if( x > 0.0 )
-            {
-                NSPoint start = NSMakePoint(x, 0);
-                NSPoint end = NSMakePoint(x, width);
-                [self line:start to:end width:1.0];
-            }
         }
-        x = origin.x;
+        
+        lineDist = initialLineDist;
+        x = origin.x + lineDist;
         while( x < width )
         {
+            lineDist *= logScale;
+            NSPoint start = NSMakePoint(x, 0.0);
+            NSPoint end = NSMakePoint(x, height);
+            [self line:start to:end width:1.0];
             x += lineDist;
-            if( x < width )
-            {
-                NSPoint start = NSMakePoint(x, 0);
-                NSPoint end = NSMakePoint(x, width);
-                [self line:start to:end width:1.0];
-            }
         }
+        
         [self setMode: GraphModeParabola frames:[self getDelay]];
     }
     else if( graphMode == GraphModeParabola )
     {
         [[self randomLineColor] set];
-        [self randomParabola:[self bounds].size width:MAX(1.0, height/400.0)];
+        [self randomCurve:[self bounds].size width:MAX(1.0, height/400.0)];
         [self setMode: GraphModeText frames:[self getDelay]];
     }
     else if( graphMode == GraphModeText)
     {
-        NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys:font, NSFontAttributeName, textColor, NSForegroundColorAttributeName, nil];
-
-        NSAttributedString * currentText=[[NSAttributedString alloc] initWithString:shortText attributes: attributes];
-        [currentText drawAtPoint:textOrigin];
-        
-        [self setMode: GraphModeLines frames:[self getDelay]];
+        [self drawTextShort];
+        [self setMode: GraphModeLines frames:[self getDelay] * 2];
     }
     else if( graphMode == GraphModeLines )
     {
-        [[self randomLineColor] set];
-        if (SSRandomIntBetween(0, 3) == 0)
-        {
-            [self randomParabola:[self bounds].size width:MAX(1.0, height/400.0)];
-        }
-        else
-        {
-            [self randomLine:[self bounds].size width:MAX(1.0, height/400.0)];
-        }
-        
         if (linesToDraw-- > 0)
         {
+            [[self randomLineColor] set];
+            if (SSRandomIntBetween(0, 2) == 0)
+            {
+                [self randomCurve:[self bounds].size width:MAX(1.0, height/400.0)];
+            }
+            else
+            {
+                [self randomLine:[self bounds].size width:MAX(1.0, height/400.0)];
+            }
+            [self drawTextShort];
             [self setMode: GraphModeLines frames:[self getDelay]];
         }
         else
         {
-            [self setMode: GraphModeTextParen frames:[self getDelay]];
+            [self setMode: GraphModeTextParen frames:[self getDelay] * 2];
         }
     }
     else if( graphMode == GraphModeTextParen)
     {
-        if( SSRandomIntBetween(0, 2) == 0)
+        if( doParens )
         {
-            NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys:font, NSFontAttributeName, textColor, NSForegroundColorAttributeName, nil];
-            
-            NSAttributedString * currentText=[[NSAttributedString alloc] initWithString:text attributes: attributes];
-            [currentText drawAtPoint:textOrigin];
+            [self drawTextLong];
         }
         
-        [self setMode: GraphModeReset frames:[self getDelay] * 3];
+        if (SSRandomIntBetween(0, 10) == 0)
+        {
+            [self setMode: GraphModeStrayLine frames:[self getDelay] * 4];
+        }
+        else
+        {
+            [self setMode: GraphModeReset frames:maxDelay];
+        }
+    }
+    else if( graphMode == GraphModeStrayLine )
+    {
+        [[self randomLineColor] set];
+        [self randomLine:[self bounds].size width:MAX(1.0, height/400.0)];
+        if( doParens )
+        {
+            [self drawTextLong];
+        }
+        [self setMode: GraphModeReset frames:1];
     }
     else if( graphMode == GraphModeReset )
     {
