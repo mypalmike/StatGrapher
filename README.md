@@ -10,7 +10,7 @@ A binary StatGrapher.saver.tgz is available in the releases section. Extract thi
 You can change the text that is used in the graph headings. Create a text file named:
 
 ```
-~/Library/Application\ Support/com.apple.systempreferences/statgrapher_words
+~/Library/Application\ Support/com.apple.ScreenSaver.Engine/statgrapher_words
 ```
 
 The format is line-oriented with 4 sections delimited by the section number enclosed in asterisks. The statgrapher_words file in the root directory of the source code is based on the word list from the original screensaver, and may be dropped into place and used as a basis for modification.
