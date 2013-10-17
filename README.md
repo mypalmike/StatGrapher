@@ -13,7 +13,7 @@ You can change the text that is used in the graph headings. Create a text file n
 ~/Library/Application\ Support/com.apple.ScreenSaver.Engine/statgrapher_words
 ```
 
-The format is line-oriented with 4 sections delimited by the section number enclosed in asterisks. The statgrapher_words file in the root directory of the source code is based on the word list from the original screensaver, and may be dropped into place and used as a basis for modification.
+The format is line-oriented with 4 sections delimited by the section number enclosed in asterisks.
 
 ```
 *1*
@@ -32,4 +32,11 @@ strength
 (parenthesized)
 [words]
 - go here -
+```
+
+The statgrapher_words file in the root directory of the source code is based on the word list from the original screensaver, and may be dropped into place and used as a basis for modification.
+
+```
+mkdir ~/Library/Application\ Support/com.apple.ScreenSaver.Engine
+curl https://raw.github.com/mypalmike/StatGrapher/master/statgrapher_words ~/Library/Application\ Support/com.apple.ScreenSaver.Engine/statgrapher_words
 ```
