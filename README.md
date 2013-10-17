@@ -38,5 +38,5 @@ The statgrapher_words file in the root directory of the source code is based on 
 
 ```
 mkdir ~/Library/Application\ Support/com.apple.ScreenSaver.Engine
-curl https://raw.github.com/mypalmike/StatGrapher/master/statgrapher_words ~/Library/Application\ Support/com.apple.ScreenSaver.Engine/statgrapher_words
+curl https://raw.github.com/mypalmike/StatGrapher/master/statgrapher_words > ~/Library/Application\ Support/com.apple.ScreenSaver.Engine/statgrapher_words
 ```
